@@ -1,13 +1,18 @@
+import MapViewComponent from "@/app/(tabs)/maps/MapView";
 import CategoryCard from "@/components/CategoryCard";
 import { IOSFilledTextInput } from "@/components/IOSFilledTextInput";
 import PadyakButton from "@/components/PadyakButton";
 import Category from "@/models/category";
 import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
 
 export default function AddScreen() {
   // Dummy screen placeholder (requested): replace with real "Add" flow later.
   // Example usage of IOSFilledTextInput component for visual reference.
+
+  // Make the map height responsive to device size (updates on rotation).
+  const { height: screenHeight } = useWindowDimensions();
+  const mapHeight = Math.min(360, Math.max(220, Math.round(screenHeight * 0.3)));
 
   const [selectedCategory, setSelectedCategory] = useState<Category>();
 
@@ -32,7 +37,9 @@ export default function AddScreen() {
       ListHeaderComponentStyle={styles.listHeader}
       ListHeaderComponent={
         <View>
-          <View style={styles.mapPlaceHolder} />
+          <View style={[styles.mapPlaceHolder, { height: mapHeight }]}>
+            <MapViewComponent />
+          </View>
           <View style={styles.inputContainer}>
             <IOSFilledTextInput
               label="Shop Name"
@@ -103,7 +110,6 @@ const styles = StyleSheet.create({
   },
   mapPlaceHolder: {
     width: "100%",
-    height: 250,
     backgroundColor: "green",
   },
   inputContainer: {
