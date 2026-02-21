@@ -1,14 +1,27 @@
-import { FlatList, StyleSheet, View } from "react-native";
-import { IOSFilledTextInput } from "@/components/IOSFilledTextInput";
-import Category from "@/models/category";
 import CategoryCard from "@/components/CategoryCard";
-import { useState } from "react";
+import { IOSFilledTextInput } from "@/components/IOSFilledTextInput";
+import PadyakButton from "@/components/PadyakButton";
+import Category from "@/models/category";
+import { useEffect, useState } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
 
 export default function AddScreen() {
   // Dummy screen placeholder (requested): replace with real "Add" flow later.
   // Example usage of IOSFilledTextInput component for visual reference.
 
-  const [selectedCategory, setSelectedCategory] = useState<Category>()
+  const [selectedCategory, setSelectedCategory] = useState<Category>();
+
+  const [shopName, setShopName] = useState<string>("");
+
+  const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (shopName.length > 0 && selectedCategory) {
+      setButtonDisabled(false);
+    } else {
+      setButtonDisabled(true);
+    }
+  }, [shopName, selectedCategory]);
 
   return (
     // Use FlatList as the single scroll container so the entire screen
@@ -21,8 +34,24 @@ export default function AddScreen() {
         <View>
           <View style={styles.mapPlaceHolder} />
           <View style={styles.inputContainer}>
-            <IOSFilledTextInput label="Shop Name" placeholder="Enter Shop Name" />
+            <IOSFilledTextInput
+              label="Shop Name"
+              placeholder="Enter Shop Name"
+              value={shopName}
+              onChangeText={setShopName}
+            />
           </View>
+        </View>
+      }
+      ListFooterComponent={
+        <View>
+          <PadyakButton
+            label="Save offline"
+            onPress={() => {}}
+            backgroundColor="#264437"
+            disabled={buttonDisabled}
+            textColor="white"
+          />
         </View>
       }
       data={categories}
@@ -34,6 +63,12 @@ export default function AddScreen() {
             category={item}
             style={styles.categoryCard}
             checked={selectedCategory?.id === item.id}
+            selectedBgColor={
+              selectedCategory?.id === item.id ? item.color : "transparent"
+            }
+            selectedTextColor={
+              selectedCategory?.id === item.id ? "white" : "black"
+            }
             // IMPORTANT: pass a function, not the result of calling the state setter.
             onPress={() => setSelectedCategory(item)}
           />
@@ -47,10 +82,10 @@ export default function AddScreen() {
 }
 
 const categories = [
-  new Category(1, "Vulcanizing"),
-  new Category(2, "Bike Shop"),
-  new Category(3, "Water Station"),
-  new Category(4, "Hazard"),
+  new Category(1, "Vulcanizing", "#A855F7"),
+  new Category(2, "Bike Shop", "#3B82F6"),
+  new Category(3, "Water Station", "#06B6D4"),
+  new Category(4, "Hazard", "#DC2626"),
 ];
 
 const styles = StyleSheet.create({
@@ -95,6 +130,6 @@ const styles = StyleSheet.create({
   },
   categoryCard: {
     // Match requested design: each card is 300dp tall.
-    aspectRatio: 1.2, 
+    aspectRatio: 1.2,
   },
 });
